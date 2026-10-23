@@ -9,6 +9,8 @@ Each entry: what we chose, and the trade-off.
 - **Tailwind CSS v4 (Vite plugin).** Brand colours and fonts are declared once in `@theme` in `client/src/index.css`. Unused classes are dropped at build, so CSS is ~2 kB gzipped. Trade-off: busier JSX; we keep that tidy with small components.
 - **Fonts self-hosted via `@fontsource`, Latin subset only.** No third-party request, works offline. Trade-off: ~70 kB of font files (cached after first load); Arial/system fallbacks apply while loading.
 
+- **Icons from `lucide-react`, no emojis.** Cleaner and consistent across phones (emoji look different per device). Named imports are tree-shaken, so only the ~12 icons we use ship (about +2.6 kB gzipped). Icons are decorative (`aria-hidden`); every one sits beside a text label.
+
 ## Data
 - **SQLite via `better-sqlite3`.** Synchronous API keeps the data layer very simple for a single-user app. Trade-off: native module (it installed from a prebuilt binary here).
 - **Recipes stored as JSON in one column**, with `id` and `is_builtin` as the only real columns. Trade-off: can't query inside ingredients with SQL; fine for 20-ish recipes, filtering happens in JS.
