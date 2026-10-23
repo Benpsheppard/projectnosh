@@ -1,3 +1,5 @@
+// Client-side access to the recipes API, exposed as a React Query hook (useRecipes).
+
 import { useQuery } from '@tanstack/react-query'
 
 async function getJson(url) {

@@ -1,3 +1,6 @@
+// Zod schemas describing a recipe and its ingredients.
+// The server validates input and the seed file with these; the client can reuse them for forms.
+
 import { z } from 'zod'
 import { DIETARY_TAGS, MEAL_TYPES, UNITS } from './constants.js'
 
@@ -40,4 +43,15 @@ export const recipeSchema = z.object({
   serves: z.number().int().positive('Serves must be at least 1'),
   ingredients: z.array(ingredientSchema).min(1, 'Add at least one ingredient'),
   method: z.array(z.string().trim().min(1)).min(1, 'Add at least one step'),
+})
+
+export const preferencesSchema = z.object({
+  dietary: z.array(z.enum(DIETARY_TAGS)),
+  householdSize: z.number().int().min(1, 'Household size must be at least 1').max(20),
+})
+
+// One planned meal. `servings` is optional: when missing, the household size is used.
+export const planEntrySchema = z.object({
+  recipeId: z.string().min(1),
+  servings: z.number().int().positive().optional(),
 })

@@ -1,3 +1,7 @@
+/*
+ * Global styles: loads Tailwind and the self-hosted fonts, and defines the Nosh brand colours and fonts.
+ */
+
 @import 'tailwindcss';
 
 /* Self-hosted fonts: Latin subset only, to keep the download small. */

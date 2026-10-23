@@ -1,3 +1,6 @@
+// Loads the built-in recipes from the JSON file into the database.
+// Validates everything first and fails loudly; safe to run repeatedly. Run with: npm run seed.
+
 const fs = require('node:fs')
 const path = require('node:path')
 const { openDb } = require('./connection')

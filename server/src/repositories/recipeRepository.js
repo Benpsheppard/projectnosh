@@ -1,3 +1,6 @@
+// Data access for recipes: the only place that writes recipe SQL.
+// Services call this and never touch the database directly.
+
 // Data access only: SQL in, plain recipe objects out.
 
 function createRecipeRepository(db) {

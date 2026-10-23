@@ -1,3 +1,6 @@
+// Opens the SQLite database and makes sure the tables in schema.sql exist.
+// Used by server.js, the seed script and tests (with ":memory:").
+
 const fs = require('node:fs')
 const path = require('node:path')
 const Database = require('better-sqlite3')

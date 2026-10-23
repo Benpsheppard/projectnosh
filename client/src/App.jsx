@@ -1,3 +1,5 @@
+// Root component. Currently a walking skeleton showing one recipe from the API; will become the tab layout.
+
 import { useRecipes } from './api/recipes'
 
 // Walking skeleton: proves client -> API -> SQLite works end to end.

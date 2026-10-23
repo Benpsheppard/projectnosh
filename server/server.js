@@ -1,3 +1,6 @@
+// Starts the API: opens the database, builds the Express app and listens on PORT.
+// Kept tiny so tests can import the app (src/app.js) without starting a server.
+
 require('dotenv').config()
 const { openDb } = require('./src/db/connection')
 const { createApp } = require('./src/app')

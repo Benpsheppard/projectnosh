@@ -1,3 +1,5 @@
+// Vite config: React + Tailwind plugins, dev server on :3000, and /api proxied to the Express server.
+
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'

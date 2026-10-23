@@ -1,3 +1,5 @@
+// Maps /api/recipes URLs to recipe controller handlers.
+
 const { Router } = require('express')
 
 function createRecipeRoutes(controller) {

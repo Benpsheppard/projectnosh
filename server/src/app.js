@@ -1,3 +1,6 @@
+// Builds the Express app: wires repository -> service -> controller -> routes, then error handling.
+// Takes the database as an argument so tests can pass an in-memory one.
+
 const express = require('express')
 const { createRecipeRepository } = require('./repositories/recipeRepository')
 const { createRecipeService } = require('./services/recipeService')

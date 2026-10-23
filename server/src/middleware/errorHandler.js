@@ -1,3 +1,5 @@
+// Not-found and error handlers so every API error has the same JSON shape.
+
 // Every error leaves the API in the same shape: { error: { code, message, details? } }
 
 function notFound(req, res) {

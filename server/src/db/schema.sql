@@ -1,3 +1,6 @@
+-- Database tables: recipes (JSON blob), plan entries, preferences (one row) and "got it at home" items.
+-- Run on every start by connection.js, so every statement is idempotent.
+
 -- The whole recipe lives as JSON in `data`; only what we query on is a column.
 CREATE TABLE IF NOT EXISTS recipes (
   id         TEXT PRIMARY KEY,
