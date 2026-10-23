@@ -1,15 +1,9 @@
-require('dotenv').config();
-const express = require('express');
+require('dotenv').config()
+const { openDb } = require('./src/db/connection')
+const { createApp } = require('./src/app')
 
-const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8000
 
-app.use(express.json());
-
-app.get('/', (req, res) => {
-  res.json({ message: 'Hello from the server!' });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT} (${process.env.NODE_ENV})`);
-});
+createApp(openDb()).listen(PORT, () => {
+  console.log(`Server listening on port ${PORT} (${process.env.NODE_ENV})`)
+})
