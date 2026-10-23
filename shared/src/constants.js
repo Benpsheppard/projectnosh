@@ -14,3 +14,12 @@ export const UNITS = [
 ]
 
 export const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+// Tags used for the filter chips and the add-recipe form.
+export const RECIPE_TAGS = ['quick', 'batch-cook', 'freezer-friendly', 'kid-friendly']
+
+// Plural forms for count-like units, so "2 tin" reads as "2 tins".
+export const UNIT_PLURALS = {
+  tin: 'tins', slice: 'slices', rasher: 'rashers', clove: 'cloves',
+  thumb: 'thumbs', ball: 'balls', handful: 'handfuls',
+}

@@ -27,7 +27,7 @@ import { DIETARY_TAGS, MEAL_TYPES, UNITS } from './constants.js'
 export const ingredientSchema = z.object({
   item: z.string().trim().min(1, 'Add a name for each ingredient'),
   // null quantity means "to taste"
-  quantity: z.number().positive('Quantity must be more than 0').nullable(),
+  quantity: z.number({ error: 'Quantity must be a number' }).positive('Quantity must be more than 0').nullable(),
   // null unit means a plain count
   unit: z.enum(UNITS).nullable(),
   prep: z.string().optional(),
@@ -40,7 +40,7 @@ export const recipeSchema = z.object({
   mealType: z.array(z.enum(MEAL_TYPES)).min(1, 'Pick at least one meal type'),
   dietary: z.array(z.enum(DIETARY_TAGS)),
   tags: z.array(z.string()),
-  serves: z.number().int().positive('Serves must be at least 1'),
+  serves: z.number({ error: 'Serves must be a number' }).int('Serves must be a whole number').positive('Serves must be at least 1'),
   ingredients: z.array(ingredientSchema).min(1, 'Add at least one ingredient'),
   method: z.array(z.string().trim().min(1)).min(1, 'Add at least one step'),
 })
@@ -54,4 +54,9 @@ export const preferencesSchema = z.object({
 export const planEntrySchema = z.object({
   recipeId: z.string().min(1),
   servings: z.number().int().positive().optional(),
+})
+
+// What a user sends when adding their own recipe: the server makes the id.
+export const newRecipeSchema = recipeSchema.omit({ id: true }).extend({
+  cuisine: z.string().trim().min(1).default('home cooking'),
 })

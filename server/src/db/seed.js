@@ -3,6 +3,7 @@
 
 const fs = require('node:fs')
 const path = require('node:path')
+const { recipeSchema } = require('@nosh/shared') // ES module, loaded via Node's require(esm)
 const { openDb } = require('./connection')
 const { createRecipeRepository } = require('../repositories/recipeRepository')
 
@@ -10,9 +11,7 @@ const RECIPES_FILE = path.join(__dirname, '../../data/project-nosh-sample-recipe
 
 // Validates every recipe first and throws with ALL problems, so bad data fails loudly
 // before anything is written.
-async function seedRecipes(db, file = RECIPES_FILE) {
-  // @nosh/shared is an ES module; dynamic import works from this CommonJS file.
-  const { recipeSchema } = await import('@nosh/shared')
+function seedRecipes(db, file = RECIPES_FILE) {
   const raw = JSON.parse(fs.readFileSync(file, 'utf8'))
   if (!Array.isArray(raw)) throw new Error('Seed file must contain an array of recipes')
 
@@ -40,10 +39,10 @@ async function seedRecipes(db, file = RECIPES_FILE) {
 module.exports = { seedRecipes }
 
 if (require.main === module) {
-  seedRecipes(openDb())
-    .then((n) => console.log(`Seeded ${n} built-in recipes`))
-    .catch((err) => {
-      console.error(err.message)
-      process.exit(1)
-    })
+  try {
+    console.log(`Seeded ${seedRecipes(openDb())} built-in recipes`)
+  } catch (err) {
+    console.error(err.message)
+    process.exit(1)
+  }
 }

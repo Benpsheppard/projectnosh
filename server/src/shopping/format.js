@@ -1,6 +1,8 @@
 // Turns summed base amounts into friendly values, e.g. 1200 g -> 1.2 kg.
 // Rounding happens here, AFTER everything has been added up.
 
+const { UNIT_PLURALS } = require('@nosh/shared')
+
 // Float maths can leave 3.0000000000000004; nudge down before rounding up.
 const ceil = (n) => Math.ceil(n - 1e-9)
 const trim = (n) => Math.round(n * 100) / 100
@@ -27,12 +29,11 @@ function formatCount(count, unit) {
   return { amount: ceil(count), unit }
 }
 
-const PLURAL_UNITS = { tin: 'tins', slice: 'slices', rasher: 'rashers', clove: 'cloves', thumb: 'thumbs', ball: 'balls', handful: 'handfuls' }
 
 // "1.2 kg", "2 tins", or just "4" for a plain count.
 function formatLabel(amount, unit) {
   if (unit === null) return String(amount)
-  const word = amount > 1 && PLURAL_UNITS[unit] ? PLURAL_UNITS[unit] : unit
+  const word = amount > 1 && UNIT_PLURALS[unit] ? UNIT_PLURALS[unit] : unit
   return `${amount} ${word}`
 }
 

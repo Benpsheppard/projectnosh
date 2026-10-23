@@ -1,8 +1,6 @@
 // Data access for recipes: the only place that writes recipe SQL.
 // Services call this and never touch the database directly.
 
-// Data access only: SQL in, plain recipe objects out.
-
 function createRecipeRepository(db) {
   const toRecipe = (row) => ({ ...JSON.parse(row.data), isBuiltin: row.is_builtin === 1 })
 
@@ -22,6 +20,10 @@ function createRecipeRepository(db) {
         `INSERT INTO recipes (id, is_builtin, data) VALUES (?, 1, ?)
          ON CONFLICT(id) DO UPDATE SET data = excluded.data WHERE is_builtin = 1`,
       ).run(recipe.id, JSON.stringify(recipe))
+    },
+
+    insertCustom(recipe) {
+      db.prepare('INSERT INTO recipes (id, is_builtin, data) VALUES (?, 0, ?)').run(recipe.id, JSON.stringify(recipe))
     },
   }
 }
