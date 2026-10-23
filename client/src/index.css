@@ -1,0 +1,24 @@
+@import 'tailwindcss';
+
+/* Self-hosted fonts: Latin subset only, to keep the download small. */
+@import '@fontsource/nunito/latin-700.css';
+@import '@fontsource/nunito-sans/latin-400.css';
+@import '@fontsource/nunito-sans/latin-600.css';
+
+/* Brand tokens. Utilities like bg-nosh-green and text-charcoal come from these names. */
+@theme {
+  --color-nosh-green: #62cc9b;
+  --color-teal: #3aa58f;
+  --color-charcoal: #2e373e;
+  --color-coral: #f3764b;
+  --color-leaf: #d5c52d;
+  --color-cloud: #b7bfc0;
+
+  --font-heading: 'Nunito', Arial, sans-serif;
+  --font-body: 'Nunito Sans', system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-charcoal);
+}
