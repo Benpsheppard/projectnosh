@@ -2,10 +2,22 @@ import { z } from 'zod'
 import { DIETARY_TAGS, MEAL_TYPES, UNITS } from './constants.js'
 
 /**
- * @typedef {{ item: string, quantity: number | null, unit: string | null, prep?: string }} Ingredient
+ * @typedef {{ 
+ *  item: string, 
+ *  quantity: number | null, 
+ *  unit: string | null, 
+ *  prep?: string 
+ * }} Ingredient
  * @typedef {{
- *   id: string, name: string, cuisine: string, mealType: string[], dietary: string[],
- *   tags: string[], serves: number, ingredients: Ingredient[], method: string[]
+ *  id: string, 
+ *  name: string, 
+ *  cuisine: string, 
+ *  mealType: string[], 
+ *  dietary: string[],
+ *  tags: string[], 
+ *  serves: number, 
+ *  ingredients: Ingredient[], 
+ *  method: string[]
  * }} Recipe
  */
 
