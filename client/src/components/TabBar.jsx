@@ -1,10 +1,12 @@
 // Bottom navigation with the three main tabs. Fixed to the bottom for easy thumb reach.
-// The current tab is marked with aria-current and a thicker top border, not just colour.
+// The current tab is marked with aria-current and a bold label, not just colour.
+// Icons come from lucide-react; they are decorative (the text label names each tab).
+import { CalendarDays, ChefHat, ShoppingBasket } from 'lucide-react'
 
 const TABS = [
-  { id: 'recipes', label: 'Recipes', icon: '🍲' },
-  { id: 'plan', label: 'Plan', icon: '📅' },
-  { id: 'shopping', label: 'Shopping list', icon: '🛒' },
+  { id: 'recipes', label: 'Recipes', Icon: ChefHat },
+  { id: 'plan', label: 'Plan', Icon: CalendarDays },
+  { id: 'shopping', label: 'Shopping list', Icon: ShoppingBasket },
 ]
 
 function TabBar({ current, onChange }) {
@@ -23,7 +25,7 @@ function TabBar({ current, onChange }) {
                   active ? 'bg-nosh-green font-bold' : 'font-semibold'
                 }`}
               >
-                <span aria-hidden="true">{tab.icon}</span>
+                <tab.Icon aria-hidden="true" />
                 {tab.label}
               </button>
             </li>

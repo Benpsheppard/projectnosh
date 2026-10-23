@@ -1,6 +1,7 @@
 // Recipe card. Collapsed: name, serves, dietary badges and key tags.
 // Tap the heading to expand in place and see the ingredients and method.
 // `onAddToPlan` is optional: the "Add to plan" button only appears once the Plan tab provides it.
+import { ChevronDown } from 'lucide-react'
 import { useId, useState } from 'react'
 import Button from './Button'
 import DietaryBadge from './DietaryBadge'
@@ -21,7 +22,7 @@ function RecipeCard({ recipe, onAddToPlan }) {
           className="flex min-h-11 w-full items-center justify-between gap-2 text-left"
         >
           {recipe.name}
-          <span aria-hidden="true">{open ? '−' : '+'}</span>
+          <ChevronDown aria-hidden="true" className={`shrink-0 ${open ? 'rotate-180' : ''}`} />
         </button>
       </h2>
 

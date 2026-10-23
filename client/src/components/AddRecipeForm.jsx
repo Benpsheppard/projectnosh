@@ -2,6 +2,7 @@
 // checks it with the SAME shared schema the server uses, and shows friendly messages.
 // A blank quantity means "to taste"; unit "none / count" means a plain count (e.g. 4 sausages).
 import { DIETARY_TAGS, MEAL_TYPES, RECIPE_TAGS, UNITS, newRecipeSchema } from '@nosh/shared'
+import { Plus } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useCreateRecipe } from '../api/recipes'
 import Button from './Button'
@@ -184,8 +185,8 @@ function AddRecipeForm({ onDone, onCancel }) {
             </li>
           ))}
         </ul>
-        <Button variant="secondary" className="mt-3" onClick={() => set('ingredients', [...form.ingredients, emptyIngredient()])}>
-          + Add another ingredient
+        <Button variant="secondary" className="mt-3 inline-flex items-center gap-2" onClick={() => set('ingredients', [...form.ingredients, emptyIngredient()])}>
+          <Plus size={18} aria-hidden="true" /> Add another ingredient
         </Button>
       </fieldset>
 
@@ -206,8 +207,8 @@ function AddRecipeForm({ onDone, onCancel }) {
             </li>
           ))}
         </ol>
-        <Button variant="secondary" className="mt-3" onClick={() => set('method', [...form.method, ''])}>
-          + Add another step
+        <Button variant="secondary" className="mt-3 inline-flex items-center gap-2" onClick={() => set('method', [...form.method, ''])}>
+          <Plus size={18} aria-hidden="true" /> Add another step
         </Button>
       </fieldset>
 
