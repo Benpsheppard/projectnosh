@@ -19,5 +19,17 @@ Each entry: what we chose, and the trade-off.
 - **routes -> controllers -> services -> repositories.** `createApp(db)` receives the database, so tests can use an in-memory one.
 - **One error shape** `{ error: { code, message, details? } }` from a single error handler.
 
+## Dietary filtering (`shared/src/dietary.js`)
+- **Lives in `shared`**, because the server (API filter) and the client (picker, banner) must apply the identical rule. Trade-off: it's ES-module code the CommonJS server has to `import()`.
+- **Strict "carries every selected tag"; untagged = not suitable.** The only implication is vegan -> vegetarian + dairy-free, held in one small `IMPLIES` table so adding a rule is a one-line change. Trade-off: an untagged recipe that happens to be vegetarian is hidden; we'd rather under-promise than make a wrong claim.
+
+## Shopping list (`server/src/shopping/`)
+- **Pure modules** (`normaliseName`, `units`, `format`, `aggregate`): no Express or database, so they are unit-tested directly and easy to walk through.
+- **Name normalising only singularises the last word.** Nothing is ever stripped, so "chopped tomatoes", "cherry tomatoes" and "tomatoes" stay separate. Trade-off: a genuinely irregular plural needs an entry in `NOT_PLURAL`; the shown name is the first spelling seen (e.g. "carrot" even when 3 are needed).
+- **Unit families.** Weight (g, kg) and volume (ml, l, tsp, tbsp; 5 ml and 15 ml spoons) convert within the family. Count-like units only add when the unit is identical. Different families stay as separate lines; we never guess (no tin = 400 ml).
+- **Sum first, round last.** Counts round up; grams round up to whole grams (kg from 1000 g); ml to whole ml (l from 1000 ml). Totals made only of spoons under 60 ml stay as spoons, rounded up to half a teaspoon. Trade-off: rounding up slightly over-buys, which suits "can't buy half a tin".
+- **"To taste" lines** (null quantity) are one line per item, separate from any quantified line of the same item.
+- **Each line lists the recipes it came from** (once per recipe, even if planned twice).
+
 ## Where AI was used
 - Claude Code (Claude Sonnet 5.5) planned the architecture with the author, and wrote the scaffold, server layers, seed and client skeleton. The author reviews and commits each phase and chose the key decisions above (JavaScript, Tailwind, recurring week, fonts).
