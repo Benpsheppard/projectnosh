@@ -5,3 +5,6 @@ node_modules/
 .env
 .env.*
 !.env.example
+
+# Local database
+server/data/*.db*
