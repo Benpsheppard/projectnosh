@@ -1,8 +1,12 @@
-// ShoppingList.jsx
+// Shopping list tab (placeholder). Phase (f) will show "To buy" and "You've got it at home".
 
-// One of the three tabs shown in bottom nav bar
-// Screen to hold current weekly shopping list for user to scroll through
-// Each item taken from user's planned recipes and summed for correct amounts
-// Each item with a checkbox for 'Got item' / 'Item in cupboards already'
-    // Need to decide if want both or just 'Got item'
-// Sort items alphabetically, by price (?), date when needed
+function ShoppingList() {
+  return (
+    <div>
+      <h2 className="font-heading text-2xl font-bold">Shopping list</h2>
+      <p>Your shopping list is coming soon.</p>
+    </div>
+  )
+}
+
+export default ShoppingList

@@ -26,3 +26,9 @@ body {
   font-family: var(--font-body);
   color: var(--color-charcoal);
 }
+
+/* A clear focus ring for keyboard users on every interactive element. */
+:focus-visible {
+  outline: 3px solid var(--color-charcoal);
+  outline-offset: 2px;
+}
