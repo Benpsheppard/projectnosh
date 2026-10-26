@@ -4,6 +4,7 @@
 const express = require('express')
 const { createRecipeRepository } = require('./repositories/recipeRepository')
 const { createPreferenceRepository } = require('./repositories/preferenceRepository')
+const { loadPriceLookup } = require('./pricing/priceLookup')
 const { createPlanRepository } = require('./repositories/planRepository')
 const { createHomeItemRepository } = require('./repositories/homeItemRepository')
 const { createRecipeService } = require('./services/recipeService')
@@ -21,7 +22,9 @@ const { createShoppingListRoutes } = require('./routes/shoppingListRoutes')
 const { notFound, errorHandler } = require('./middleware/errorHandler')
 
 // Takes the database as an argument so tests can pass an in-memory one.
-function createApp(db) {
+// `priceLookup` is replaceable too (see pricing/priceLookup.js); it defaults to data/prices.json,
+// which is checked here so a bad price file stops the server at start-up.
+function createApp(db, { priceLookup = loadPriceLookup() } = {}) {
   const app = express()
   app.use(express.json())
 
@@ -30,7 +33,7 @@ function createApp(db) {
   const recipeService = createRecipeService(recipeRepo, preferenceService)
   const planRepo = createPlanRepository(db)
   const planService = createPlanService(planRepo, recipeRepo, preferenceService)
-  const shoppingListService = createShoppingListService(planRepo, recipeRepo, createHomeItemRepository(db), preferenceService)
+  const shoppingListService = createShoppingListService(planRepo, recipeRepo, createHomeItemRepository(db), preferenceService, priceLookup)
 
   app.get('/api/health', (req, res) => res.json({ ok: true }))
   app.use('/api/recipes', createRecipeRoutes(createRecipeController(recipeService)))

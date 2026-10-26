@@ -3,13 +3,15 @@ import request from 'supertest'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createApp } from '../src/app.js'
 import { openDb } from '../src/db/connection.js'
+import { createPriceLookup } from '../src/pricing/priceLookup.js'
 import { seedRecipes } from '../src/db/seed.js'
+import { noPrices } from './helpers.js'
 
 let app
 beforeEach(() => {
   const db = openDb(':memory:')
   seedRecipes(db)
-  app = createApp(db)
+  app = createApp(db, { priceLookup: noPrices })
 })
 
 const plan = (day, slot, recipeId, servings) => request(app).put(`/api/plan/${day}/${slot}`).send({ recipeId, servings })
@@ -18,7 +20,9 @@ const find = (lines, name) => lines.find((l) => l.name === name)
 
 describe('GET /api/shopping-list', () => {
   it('is empty when nothing is planned', async () => {
-    expect(await getList()).toEqual({ plannedMeals: 0, toBuy: [], atHome: [] })
+    const list = await getList()
+    expect(list).toMatchObject({ plannedMeals: 0, toBuy: [], atHome: [] })
+    expect(list.estimate).toMatchObject({ totalPence: 0, pricedCount: 0, unknownCount: 0 })
   })
 
   it('scales to the planned servings', async () => {
@@ -91,5 +95,86 @@ describe('got it at home', () => {
   it('is safe to mark twice', async () => {
     await request(app).put('/api/shopping-list/home-items/onion')
     expect((await request(app).put('/api/shopping-list/home-items/onion')).status).toBe(204)
+  })
+})
+
+describe('estimated cost', () => {
+  // A small fake price table, injected into the app, so the numbers below are exact.
+  let priced
+  beforeEach(async () => {
+    const lookup = createPriceLookup({
+      store: 'Test Store',
+      dateChecked: '2026-01-01',
+      prices: [
+        { item: 'chopped tomatoes', packSize: 1, unit: 'tin', packPrice: 0.5 },
+        { item: 'olive oil', packSize: 500, unit: 'ml', packPrice: 4 },
+        { item: 'onion', packSize: 1, unit: 'kg', packPrice: 0.9 }, // recipe counts onions, so no match
+      ],
+    })
+    const db = openDb(':memory:')
+    seedRecipes(db)
+    priced = createApp(db, { priceLookup: lookup })
+    await request(priced).put('/api/plan/0/lunch').send({ recipeId: 'tomato-soup', servings: 4 })
+  })
+  const list = async () => (await request(priced).get('/api/shopping-list')).body
+
+  it('prices whole packs and counts what it cannot price', async () => {
+    const { estimate, toBuy } = await list()
+    // 2 tins x 50p + 1 bottle of olive oil (30 ml needs one 500 ml pack) = 500p. Onion, garlic and stock are unknown.
+    expect(estimate).toMatchObject({ store: 'Test Store', dateChecked: '2026-01-01', totalPence: 500, pricedCount: 2, unknownCount: 3 })
+    expect(find(toBuy, 'chopped tomatoes').price).toMatchObject({ status: 'priced', packs: 2, costPence: 100 })
+    expect(find(toBuy, 'onion').price).toEqual({ status: 'unknown', reason: 'unit-mismatch' })
+    expect(find(toBuy, 'garlic').price).toEqual({ status: 'unknown', reason: 'no-price' })
+    expect(find(toBuy, 'salt and pepper').price).toBeNull()
+  })
+
+  it('drops items marked "got it at home" out of the total', async () => {
+    await request(priced).put('/api/shopping-list/home-items/olive%20oil')
+    const { estimate, atHome } = await list()
+    expect(estimate).toMatchObject({ totalPence: 100, pricedCount: 1, unknownCount: 3 })
+    expect(find(atHome, 'olive oil')).toBeDefined()
+  })
+
+  it('never treats unknown items as zero: with no prices the total is 0 but everything is "unknown"', async () => {
+    await request(priced).put('/api/shopping-list/home-items/chopped%20tomato')
+    await request(priced).put('/api/shopping-list/home-items/olive%20oil')
+    expect((await list()).estimate).toMatchObject({ totalPence: 0, pricedCount: 0, unknownCount: 3 })
+  })
+
+  describe('against the weekly budget', () => {
+    const setBudget = (weeklyBudgetPence) =>
+      request(priced).put('/api/preferences').send({ dietary: [], householdSize: 2, weeklyBudgetPence })
+
+    it('has no comparison when there is no budget', async () => {
+      expect((await list()).estimate).toMatchObject({ budgetPence: null, remainingPence: null })
+    })
+
+    it('says how much is left when under budget', async () => {
+      await setBudget(2000) // total is 500
+      expect((await list()).estimate).toMatchObject({ budgetPence: 2000, remainingPence: 1500 })
+    })
+
+    it('goes negative when over budget', async () => {
+      await setBudget(300)
+      expect((await list()).estimate).toMatchObject({ budgetPence: 300, remainingPence: -200 })
+    })
+
+    it('is zero when exactly on budget', async () => {
+      await setBudget(500)
+      expect((await list()).estimate.remainingPence).toBe(0)
+    })
+
+    it('gets more room when something is marked "got it at home"', async () => {
+      await setBudget(1000)
+      await request(priced).put('/api/shopping-list/home-items/olive%20oil') // takes 400 off the total
+      expect((await list()).estimate).toMatchObject({ totalPence: 100, remainingPence: 900 })
+    })
+
+    it('cannot compare when nothing could be priced (a £0 total is not "under budget")', async () => {
+      await setBudget(1000)
+      await request(priced).put('/api/shopping-list/home-items/chopped%20tomato')
+      await request(priced).put('/api/shopping-list/home-items/olive%20oil')
+      expect((await list()).estimate).toMatchObject({ budgetPence: 1000, pricedCount: 0, remainingPence: null })
+    })
   })
 })
