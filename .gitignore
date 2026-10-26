@@ -8,3 +8,6 @@ node_modules/
 
 # Local database
 server/data/*.db*
+
+# Local planning notes (not part of the project)
+PLAN.md
