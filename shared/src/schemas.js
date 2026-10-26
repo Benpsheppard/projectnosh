@@ -52,8 +52,20 @@ export const preferencesSchema = z.object({
 
 // One planned meal. `servings` is optional: when missing, the household size is used.
 export const planEntrySchema = z.object({
-  recipeId: z.string().min(1),
-  servings: z.number().int().positive().optional(),
+  recipeId: z.string().min(1, 'Pick a recipe'),
+  servings: z
+    .number({ error: 'Servings must be a number' })
+    .int('Servings must be a whole number')
+    .min(1, 'Servings must be at least 1')
+    .max(20, 'Servings can be up to 20')
+    .optional(),
+})
+
+// The day (0 = Monday ... 6 = Sunday) and meal slot taken from the URL, e.g. /api/plan/0/dinner.
+const dayError = 'Pick a day from Monday to Sunday'
+export const planSlotSchema = z.object({
+  day: z.coerce.number({ error: dayError }).int(dayError).min(0, dayError).max(6, dayError),
+  slot: z.enum(MEAL_TYPES, { error: 'Pick breakfast, lunch, dinner or dessert' }),
 })
 
 // What a user sends when adding their own recipe: the server makes the id.
