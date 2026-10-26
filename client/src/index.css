@@ -30,6 +30,11 @@ body {
 /* A clear focus ring for keyboard users on every interactive element.
    Kept in the base layer so Tailwind classes (e.g. a light ring on the dark header) can override it. */
 @layer base {
+  /* Taps respond straight away and a double-tap does not zoom the page. */
+  button, input, select, textarea {
+    touch-action: manipulation;
+  }
+
   :focus-visible {
     outline: 3px solid var(--color-charcoal);
     outline-offset: 2px;

@@ -9,9 +9,10 @@ const TABS = [
   { id: 'shopping', label: 'Shopping list', Icon: ShoppingBasket },
 ]
 
+// pb-[env(safe-area-inset-bottom)] keeps the tabs clear of the iPhone home indicator.
 function TabBar({ current, onChange }) {
   return (
-    <nav aria-label="Main" className="fixed inset-x-0 bottom-0 border-t-2 border-charcoal bg-white">
+    <nav aria-label="Main" className="fixed inset-x-0 bottom-0 border-t-2 border-charcoal bg-white pb-[env(safe-area-inset-bottom)]">
       <ul className="mx-auto flex max-w-2xl">
         {TABS.map((tab) => {
           const active = tab.id === current
