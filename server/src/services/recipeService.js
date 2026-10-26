@@ -1,5 +1,6 @@
 // Business logic for recipes: searching/filtering, looking one up, and creating custom ones.
 const crypto = require('node:crypto')
+const { filterSuitable } = require('@nosh/shared')
 const { HttpError } = require('../errors')
 
 // "Mum's Chilli!" -> "mums-chilli-3fa9": readable, and the suffix keeps ids unique.
@@ -13,12 +14,16 @@ function searchText(recipe) {
   return [recipe.name, recipe.cuisine, ...recipe.tags, ...recipe.ingredients.map((i) => i.item)].join(' ').toLowerCase()
 }
 
-function createRecipeService(recipeRepo) {
+function createRecipeService(recipeRepo, preferenceService) {
   return {
-    // filters: { q?: string, mealType?: string, tags?: string[] }  (tags must ALL match)
-    list({ q = '', mealType, tags = [] } = {}) {
+    // filters: { q?, mealType?, tags? (must ALL match), suitable? }
+    // suitable: true keeps only recipes that fit the saved dietary preferences.
+    list({ q = '', mealType, tags = [], suitable = false } = {}) {
       const text = q.trim().toLowerCase()
-      return recipeRepo.findAll().filter(
+      const recipes = suitable
+        ? filterSuitable(recipeRepo.findAll(), preferenceService.get().dietary)
+        : recipeRepo.findAll()
+      return recipes.filter(
         (r) =>
           (!text || searchText(r).includes(text)) &&
           (!mealType || r.mealType.includes(mealType)) &&

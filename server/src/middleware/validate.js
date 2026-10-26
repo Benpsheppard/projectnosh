@@ -7,7 +7,7 @@ function validate(schema) {
     const result = schema.safeParse(req.body)
     if (!result.success) {
       const details = result.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message }))
-      return next(new HttpError(400, 'VALIDATION_ERROR', 'Please check the recipe and try again', details))
+      return next(new HttpError(400, 'VALIDATION_ERROR', 'Please check what you entered and try again', details))
     }
     req.body = result.data
     next()

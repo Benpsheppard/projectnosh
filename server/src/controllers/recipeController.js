@@ -6,8 +6,8 @@ const asArray = (value) => (value === undefined ? [] : [].concat(value))
 function createRecipeController(recipeService) {
   return {
     list(req, res) {
-      const { q, mealType, tag } = req.query
-      res.json(recipeService.list({ q, mealType, tags: asArray(tag) }))
+      const { q, mealType, tag, suitable } = req.query
+      res.json(recipeService.list({ q, mealType, tags: asArray(tag), suitable: suitable === 'true' }))
     },
 
     get(req, res) {
