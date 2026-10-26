@@ -1,21 +1,31 @@
-// Recipes tab: search, filter chips, the list of recipe cards, and the "Add recipe" form.
-// Filtering is done by the API (we just send the search text, meal type and tags).
+// Recipes tab: dietary banner, search, filter chips, the list of recipe cards, and the "Add recipe" form.
+// Filtering is done by the API (we send the search text, meal type, tags and whether to apply
+// the saved dietary preferences).
 import { MEAL_TYPES, RECIPE_TAGS } from '@nosh/shared'
 import { useState } from 'react'
+import { usePreferences } from '../api/preferences'
 import { useRecipes } from '../api/recipes'
 import AddRecipeForm from '../components/AddRecipeForm'
 import Button from '../components/Button'
+import DietaryFilterBanner from '../components/DietaryFilterBanner'
 import FilterChip from '../components/FilterChip'
 import RecipeCard from '../components/RecipeCard'
 import { inputClass, labelClass } from '../components/ui'
 
-function Recipes() {
+function Recipes({ dietaryFilterOn, onDietaryFilterChange }) {
   const [adding, setAdding] = useState(false)
   const [justAdded, setJustAdded] = useState(false)
   const [q, setQ] = useState('')
   const [mealType, setMealType] = useState(null)
   const [tags, setTags] = useState([])
-  const { data: recipes, isPending, error } = useRecipes({ q: q.trim(), mealType, tags })
+  const { data: prefs, isPending: prefsLoading } = usePreferences()
+  const dietary = prefs?.dietary ?? []
+  const filteringByDiet = dietary.length > 0 && dietaryFilterOn
+  // Wait for preferences first, so the list never flashes unfiltered and then changes.
+  const { data: recipes, isPending, error } = useRecipes(
+    { q: q.trim(), mealType, tags, suitable: filteringByDiet },
+    { enabled: !prefsLoading },
+  )
 
   const toggleTag = (tag) => setTags(tags.includes(tag) ? tags.filter((t) => t !== tag) : [...tags, tag])
   const hasFilters = q.trim() !== '' || mealType !== null || tags.length > 0
@@ -43,6 +53,14 @@ function Recipes() {
         <h2 className="font-heading text-2xl font-bold">Recipes</h2>
         <Button onClick={() => { setJustAdded(false); setAdding(true) }}>Add recipe</Button>
       </div>
+
+      {dietary.length > 0 && (
+        <DietaryFilterBanner
+          dietary={dietary}
+          filterOn={dietaryFilterOn}
+          onToggle={() => onDietaryFilterChange(!dietaryFilterOn)}
+        />
+      )}
 
       {justAdded && (
         <p role="status" className="rounded-xl bg-nosh-green p-3 font-semibold">
@@ -79,9 +97,18 @@ function Recipes() {
 
       {recipes?.length === 0 && (
         <div className="rounded-2xl border-2 border-dashed border-charcoal/40 p-6 text-center">
-          <p className="font-bold">No recipes match that yet.</p>
-          <p className="mb-3">Try fewer filters, or add your own.</p>
-          {hasFilters && <Button variant="secondary" onClick={clearFilters}>Clear filters</Button>}
+          <p className="font-bold">We don't have a match for that yet.</p>
+          <p className="mb-3">
+            {filteringByDiet
+              ? 'Your dietary settings are narrowing things down. You can show every recipe, or add your own.'
+              : 'Try fewer filters, or add your own.'}
+          </p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {hasFilters && <Button variant="secondary" onClick={clearFilters}>Clear filters</Button>}
+            {filteringByDiet && (
+              <Button variant="secondary" onClick={() => onDietaryFilterChange(false)}>Show all recipes</Button>
+            )}
+          </div>
         </div>
       )}
 

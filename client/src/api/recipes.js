@@ -2,20 +2,23 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { request } from './client'
 
-// filters: { q, mealType, tags } -> /api/recipes?q=..&mealType=..&tag=..&tag=..
-function toQueryString({ q, mealType, tags = [] }) {
+// filters: { q, mealType, tags, suitable } -> /api/recipes?q=..&mealType=..&tag=..&suitable=true
+function toQueryString({ q, mealType, tags = [], suitable }) {
   const params = new URLSearchParams()
   if (q) params.set('q', q)
   if (mealType) params.set('mealType', mealType)
   tags.forEach((tag) => params.append('tag', tag))
+  if (suitable) params.set('suitable', 'true')
   const text = params.toString()
   return text ? `?${text}` : ''
 }
 
-export function useRecipes(filters = {}) {
+// options.enabled lets a page wait (e.g. until preferences have loaded) before asking.
+export function useRecipes(filters = {}, { enabled = true } = {}) {
   return useQuery({
     queryKey: ['recipes', filters],
     queryFn: () => request(`/api/recipes${toQueryString(filters)}`),
+    enabled,
     placeholderData: keepPreviousData, // keep the old list on screen while a new search loads
   })
 }

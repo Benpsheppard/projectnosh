@@ -27,8 +27,11 @@ body {
   color: var(--color-charcoal);
 }
 
-/* A clear focus ring for keyboard users on every interactive element. */
-:focus-visible {
-  outline: 3px solid var(--color-charcoal);
-  outline-offset: 2px;
+/* A clear focus ring for keyboard users on every interactive element.
+   Kept in the base layer so Tailwind classes (e.g. a light ring on the dark header) can override it. */
+@layer base {
+  :focus-visible {
+    outline: 3px solid var(--color-charcoal);
+    outline-offset: 2px;
+  }
 }

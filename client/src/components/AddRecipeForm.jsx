@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useCreateRecipe } from '../api/recipes'
 import Button from './Button'
+import CheckboxGroup from './CheckboxGroup'
 import { errorClass, inputClass, labelClass } from './ui'
 
 const emptyIngredient = () => ({ quantity: '', unit: '', item: '' })
@@ -45,30 +46,6 @@ function toFieldErrors(issues, { ingredientRows, stepRows }) {
     errors[key] ??= message // keep the first message per field
   }
   return errors
-}
-
-function CheckboxGroup({ legend, options, selected, onChange, error }) {
-  const toggle = (value) =>
-    onChange(selected.includes(value) ? selected.filter((v) => v !== value) : [...selected, value])
-  return (
-    <fieldset>
-      <legend className={labelClass}>{legend}</legend>
-      <div className="flex flex-wrap gap-x-5 gap-y-1">
-        {options.map((option) => (
-          <label key={option} className="flex min-h-11 items-center gap-2">
-            <input
-              type="checkbox"
-              className="size-6 accent-teal"
-              checked={selected.includes(option)}
-              onChange={() => toggle(option)}
-            />
-            {option}
-          </label>
-        ))}
-      </div>
-      {error && <p className={errorClass}>{error}</p>}
-    </fieldset>
-  )
 }
 
 function AddRecipeForm({ onDone, onCancel }) {
