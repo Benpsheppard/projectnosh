@@ -34,7 +34,7 @@ function App() {
       </header>
       {/* pb-24 leaves room so the fixed tab bar never covers the last card */}
       <main className="mx-auto max-w-2xl px-4 pb-24 pt-4">
-        <Page dietaryFilterOn={dietaryFilterOn} onDietaryFilterChange={setDietaryFilterOn} />
+        <Page dietaryFilterOn={dietaryFilterOn} onDietaryFilterChange={setDietaryFilterOn} onNavigate={setTab} />
       </main>
       <TabBar current={tab} onChange={setTab} />
       <SettingsSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} />

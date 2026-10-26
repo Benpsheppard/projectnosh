@@ -48,9 +48,11 @@ function toFieldErrors(issues, { ingredientRows, stepRows }) {
   return errors
 }
 
-function AddRecipeForm({ onDone, onCancel }) {
+// initialMealType pre-ticks a meal (used when creating a recipe from a plan slot).
+// intro is an optional line under the heading. onDone receives the saved recipe.
+function AddRecipeForm({ onDone, onCancel, initialMealType, intro }) {
   const [form, setForm] = useState({
-    name: '', serves: '2', mealType: [], dietary: [], tags: [],
+    name: '', serves: '2', mealType: initialMealType ? [initialMealType] : [], dietary: [], tags: [],
     ingredients: [emptyIngredient(), emptyIngredient(), emptyIngredient()],
     method: [''],
   })
@@ -87,7 +89,10 @@ function AddRecipeForm({ onDone, onCancel }) {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-6">
-      <h2 className="font-heading text-2xl font-bold">Add your own recipe</h2>
+      <div>
+        <h2 className="font-heading text-2xl font-bold">Add your own recipe</h2>
+        {intro && <p className="mt-1">{intro}</p>}
+      </div>
 
       {errorList.length > 0 && (
         <div ref={summaryRef} tabIndex={-1} role="alert" className="rounded-xl border-2 border-red-800 p-3">

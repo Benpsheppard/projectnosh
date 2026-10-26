@@ -17,5 +17,6 @@ export async function request(url, options = {}) {
     const body = await res.json().catch(() => null)
     throw new ApiError(body?.error?.message ?? 'Something went wrong. Please try again.', body?.error?.details ?? [])
   }
+  if (res.status === 204) return null // e.g. after a DELETE there is no body
   return res.json()
 }

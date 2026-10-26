@@ -7,14 +7,17 @@ import { usePreferences } from '../api/preferences'
 import { useRecipes } from '../api/recipes'
 import AddRecipeForm from '../components/AddRecipeForm'
 import Button from '../components/Button'
+import AddToPlanSheet from '../components/AddToPlanSheet'
 import DietaryFilterBanner from '../components/DietaryFilterBanner'
 import FilterChip from '../components/FilterChip'
 import RecipeCard from '../components/RecipeCard'
+import Sheet from '../components/Sheet'
 import { inputClass, labelClass } from '../components/ui'
 
 function Recipes({ dietaryFilterOn, onDietaryFilterChange }) {
   const [adding, setAdding] = useState(false)
-  const [justAdded, setJustAdded] = useState(false)
+  const [notice, setNotice] = useState('') // a short confirmation, e.g. "Recipe saved"
+  const [planningRecipe, setPlanningRecipe] = useState(null) // recipe whose "Add to plan" sheet is open
   const [q, setQ] = useState('')
   const [mealType, setMealType] = useState(null)
   const [tags, setTags] = useState([])
@@ -41,7 +44,7 @@ function Recipes({ dietaryFilterOn, onDietaryFilterChange }) {
         onCancel={() => setAdding(false)}
         onDone={() => {
           setAdding(false)
-          setJustAdded(true)
+          setNotice('Recipe saved. You will find it under "Your recipe".')
         }}
       />
     )
@@ -51,7 +54,7 @@ function Recipes({ dietaryFilterOn, onDietaryFilterChange }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="font-heading text-2xl font-bold">Recipes</h2>
-        <Button onClick={() => { setJustAdded(false); setAdding(true) }}>Add recipe</Button>
+        <Button onClick={() => { setNotice(''); setAdding(true) }}>Add recipe</Button>
       </div>
 
       {dietary.length > 0 && (
@@ -62,9 +65,9 @@ function Recipes({ dietaryFilterOn, onDietaryFilterChange }) {
         />
       )}
 
-      {justAdded && (
+      {notice && (
         <p role="status" className="rounded-xl bg-nosh-green p-3 font-semibold">
-          Recipe saved. You will find it under "Your recipe".
+          {notice}
         </p>
       )}
 
@@ -76,7 +79,7 @@ function Recipes({ dietaryFilterOn, onDietaryFilterChange }) {
 
       <fieldset>
         <legend className="sr-only">Filter by meal</legend>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-4 gap-2">
           {MEAL_TYPES.map((type) => (
             <FilterChip key={type} label={type} selected={mealType === type}
               onToggle={() => setMealType(mealType === type ? null : type)} />
@@ -85,7 +88,7 @@ function Recipes({ dietaryFilterOn, onDietaryFilterChange }) {
       </fieldset>
       <fieldset>
         <legend className="sr-only">Filter by tag</legend>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid md:grid-cols-4 grid-cols-2 gap-2">
           {RECIPE_TAGS.map((tag) => (
             <FilterChip key={tag} label={tag} selected={tags.includes(tag)} onToggle={() => toggleTag(tag)} />
           ))}
@@ -119,11 +122,23 @@ function Recipes({ dietaryFilterOn, onDietaryFilterChange }) {
           </p>
           <ul className="space-y-3">
             {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
+              <RecipeCard key={recipe.id} recipe={recipe} onAddToPlan={setPlanningRecipe} />
             ))}
           </ul>
         </>
       )}
+
+      <Sheet open={planningRecipe !== null} onClose={() => setPlanningRecipe(null)} title="Add to plan">
+        {planningRecipe && (
+          <AddToPlanSheet
+            recipe={planningRecipe}
+            onAdded={(message) => {
+              setNotice(message)
+              setPlanningRecipe(null)
+            }}
+          />
+        )}
+      </Sheet>
     </div>
   )
 }
