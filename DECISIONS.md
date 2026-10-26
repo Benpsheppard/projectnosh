@@ -52,5 +52,16 @@ Each entry: what we chose, and the trade-off.
 - **Household size uses a number field with +/- buttons** (big tap targets) and is validated by the shared schema.
 - Global focus ring moved into Tailwind's base layer so components can override its colour (needed on the dark header).
 
+## Plan tab (phase e)
+- **Plan entries are keyed by (day, slot)**, so a slot holds at most one meal and setting it again swaps it. `PUT /api/plan/:day/:slot` does both "add" and "change", and the day and slot in the URL are validated with a shared schema just like a request body.
+- **The plan response includes the recipe's name, serves and tags**, so the screen needs one request, not one per meal. Trade-off: the server does a small lookup per entry (at most 28), which is fine at this size.
+- **Servings are stored per meal, set to the household size when you add it.** Changing the household size later does not rewrite meals you already planned. Trade-off: simple and predictable, but a household change means adjusting existing meals by hand. (Storing "no value = follow the household" would track it, at the cost of a nullable column and a migration.)
+- **Any recipe can go in any slot** (e.g. a dinner as lunch leftovers). The picker only *suggests* recipes for the slot's meal type, and the server does not enforce it.
+- **Day markers are a number badge**, not just colour, and each day button's accessible name says how many meals it holds.
+- **Tap-to-add only, no drag and drop**: an empty slot opens a picker sheet; a planned meal opens a sheet to change servings, swap or remove. This meets WCAG 2.2's rule that dragging needs a non-drag alternative, and is easier on touch.
+- **"Create your own" from a slot** opens the add-recipe form with that meal ticked, and the saved recipe drops straight into the slot.
+- **"Add to plan" on a recipe card** opens a day + meal chooser (defaulting to today and the recipe's meal type) and warns if it will swap an existing meal.
+- **One shared `Sheet` component** (native `<dialog>`) now serves Settings, the picker, the meal sheet and Add to plan. It ignores the browser's late `close` event when we closed it ourselves; without that, swapping from one sheet to the next closed the new sheet too (found in browser testing).
+
 ## Where AI was used
 - Claude Code (Claude Sonnet 5.5) planned the architecture with the author, and wrote the scaffold, server layers, seed and client skeleton. The author reviews and commits each phase and chose the key decisions above (JavaScript, Tailwind, recurring week, fonts).
