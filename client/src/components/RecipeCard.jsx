@@ -13,7 +13,7 @@ function RecipeCard({ recipe, onAddToPlan }) {
 
   return (
     <li className="rounded-2xl border-2 border-charcoal/30 bg-white p-4">
-      <h2 className="font-heading text-xl font-bold">
+      <h3 className="font-heading text-xl font-bold">
         <button
           type="button"
           aria-expanded={open}
@@ -24,7 +24,7 @@ function RecipeCard({ recipe, onAddToPlan }) {
           {recipe.name}
           <ChevronDown aria-hidden="true" className={`shrink-0 ${open ? 'rotate-180' : ''}`} />
         </button>
-      </h2>
+      </h3>
 
       <p className="text-charcoal/75">
         Serves {recipe.serves} · {recipe.mealType.join(', ')}
@@ -47,14 +47,14 @@ function RecipeCard({ recipe, onAddToPlan }) {
       )}
 
       <div id={detailsId} hidden={!open} className="mt-4">
-        <h3 className="font-heading font-bold">Ingredients (serves {recipe.serves})</h3>
+        <h4 className="font-heading font-bold">Ingredients (serves {recipe.serves})</h4>
         <ul className="mt-1 list-disc pl-5">
           {recipe.ingredients.map((ingredient, i) => (
             <li key={i}>{formatIngredient(ingredient)}</li>
           ))}
         </ul>
 
-        <h3 className="mt-4 font-heading font-bold">Method</h3>
+        <h4 className="mt-4 font-heading font-bold">Method</h4>
         <p className="text-sm text-charcoal/75">Amounts in the steps are for {recipe.serves} people.</p>
         <ol className="mt-1 list-decimal space-y-1 pl-5">
           {recipe.method.map((step, i) => (

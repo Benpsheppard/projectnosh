@@ -10,7 +10,7 @@ function Button({ variant = 'primary', className = '', ...props }) {
   return (
     <button
       type="button"
-      className={`min-h-12 rounded-full px-5 font-bold ${looks[variant]} ${className}`}
+      className={`min-h-12 rounded-full px-5 font-bold disabled:cursor-not-allowed disabled:opacity-60 ${looks[variant]} ${className}`}
       {...props}
     />
   )

@@ -2,7 +2,7 @@
 // Tab state is plain component state; with three tabs a router would be extra weight.
 // `dietaryFilterOn` lives here so it survives switching tabs.
 import { Settings } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Plan from './pages/Plan'
 import Recipes from './pages/Recipes'
 import ShoppingList from './pages/ShoppingList'
@@ -10,6 +10,7 @@ import SettingsSheet from './components/SettingsSheet'
 import TabBar from './components/TabBar'
 
 const PAGES = { recipes: Recipes, plan: Plan, shopping: ShoppingList }
+const TITLES = { recipes: 'Recipes', plan: 'Plan', shopping: 'Shopping list' }
 
 function App() {
   const [tab, setTab] = useState('recipes')
@@ -17,11 +18,17 @@ function App() {
   const [dietaryFilterOn, setDietaryFilterOn] = useState(true)
   const Page = PAGES[tab]
 
+  // Each tab is a new "page" to the user: update the browser title and start at the top.
+  useEffect(() => {
+    document.title = `${TITLES[tab]} | Nosh`
+    window.scrollTo(0, 0)
+  }, [tab])
+
   return (
     <>
       <header className="bg-charcoal px-4 py-1">
         <div className="mx-auto flex max-w-2xl items-center justify-between">
-          <p className="font-heading text-2xl font-bold text-nosh-green">Nosh</p>
+          <h1 className="font-heading text-2xl font-bold text-nosh-green">Nosh</h1>
           <button
             type="button"
             aria-label="Settings"
