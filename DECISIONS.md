@@ -63,5 +63,13 @@ Each entry: what we chose, and the trade-off.
 - **"Add to plan" on a recipe card** opens a day + meal chooser (defaulting to today and the recipe's meal type) and warns if it will swap an existing meal.
 - **One shared `Sheet` component** (native `<dialog>`) now serves Settings, the picker, the meal sheet and Add to plan. It ignores the browser's late `close` event when we closed it ourselves; without that, swapping from one sheet to the next closed the new sheet too (found in browser testing).
 
+## Shopping list and "got it at home" (phase f)
+- **The list is derived on demand, never stored.** `GET /api/shopping-list` reads the plan, runs the pure `aggregate` function and returns `{ plannedMeals, toBuy, atHome }`. The plan is the single source of truth, so the list can never go stale. Trade-off: it is recalculated on every request (cheap at this size).
+- **"Got it at home" is stored by normalised ingredient name**, not by list line. It therefore survives plan changes, and an item you marked at home stays marked if it leaves the plan and comes back. Marking "chopped tomato" moves every chopped-tomato line (e.g. tins and grams) together. Trade-off: you can't mark just one of two lines for the same ingredient.
+- **Plan changes refresh the list** (the client invalidates both caches), and the toggle is a simple "send, then refetch" rather than an optimistic update. Trade-off: a short delay on slow connections, but far less code.
+- **One-tap toggle is a labelled button** ("Got it" / "Need it") with an icon, not a bare checkbox, so its meaning is clear to everyone and its accessible name contains its visible text.
+- **Friendly empty states**: nothing planned (with a link to the plan), nothing to buy (everything at home), and nothing at home yet.
+- **`DB_FILE` environment variable** selects a different database file, so experiments and browser tests can run against a scratch copy instead of real data.
+
 ## Where AI was used
 - Claude Code (Claude Sonnet 5.5) planned the architecture with the author, and wrote the scaffold, server layers, seed and client skeleton. The author reviews and commits each phase and chose the key decisions above (JavaScript, Tailwind, recurring week, fonts).
