@@ -42,5 +42,15 @@ Each entry: what we chose, and the trade-off.
 - **Tabs are plain state, not a router.** Trade-off: no deep links or browser back between tabs.
 - Accessibility so far: labelled fields, 44-48px tap targets, visible focus ring, errors announced via `role="alert"`, filter state shown with a tick as well as colour.
 
+## Settings and dietary filtering (phase d)
+- **Preferences are one saved row on the server** (`GET/PUT /api/preferences`), so every device and tab sees the same settings and the API can use them.
+- **`GET /api/recipes?suitable=true` filters using the saved preferences** with the shared `filterSuitable`. The client waits for preferences before fetching recipes, so the list never flashes unfiltered. Trade-off: the client asks for filtering explicitly rather than the server always doing it, which keeps "show all" a simple switch.
+- **"Show all recipes" is temporary UI state** (held in `App`, so it survives tab changes but resets on reload). The saved settings are never changed by it. Trade-off: not remembered across visits, which avoids someone forgetting their filter is off.
+- **The banner shows in both states** (filter on: "Showing recipes that are vegan" + "Show all recipes"; off: "Showing all recipes, whatever your settings" + "Use my settings"), so it is always clear what the list is doing.
+- **Empty results get friendly copy and a way out** ("Show all recipes", "Clear filters"), never a blank screen.
+- **Settings sheet uses the native `<dialog>`**: focus trapping, Esc to close and the backdrop come from the browser, with no modal library. The form inside only mounts while open, so cancelled edits are discarded.
+- **Household size uses a number field with +/- buttons** (big tap targets) and is validated by the shared schema.
+- Global focus ring moved into Tailwind's base layer so components can override its colour (needed on the dark header).
+
 ## Where AI was used
 - Claude Code (Claude Sonnet 5.5) planned the architecture with the author, and wrote the scaffold, server layers, seed and client skeleton. The author reviews and commits each phase and chose the key decisions above (JavaScript, Tailwind, recurring week, fonts).
