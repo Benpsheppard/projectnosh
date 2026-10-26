@@ -4,9 +4,10 @@
 import { CalendarDays } from 'lucide-react'
 import { useSetAtHome, useShoppingList } from '../api/shoppingList'
 import Button from '../components/Button'
+import EstimateSummary from '../components/EstimateSummary'
 import ShoppingItem from '../components/ShoppingItem'
 
-function ShoppingList({ onNavigate }) {
+function ShoppingList({ onNavigate, onOpenSettings }) {
   const { data: list, isPending, error } = useShoppingList()
   const setAtHome = useSetAtHome()
   // `line.itemKey` is the normalised name, so the choice sticks even if the plan changes.
@@ -38,6 +39,8 @@ function ShoppingList({ onNavigate }) {
           For {list.plannedMeals} planned {list.plannedMeals === 1 ? 'meal' : 'meals'}, scaled to the number of people on each.
         </p>
       </div>
+
+      <EstimateSummary estimate={list.estimate} onOpenSettings={onOpenSettings} />
 
       {setAtHome.error && <p role="alert">{setAtHome.error.message}</p>}
 

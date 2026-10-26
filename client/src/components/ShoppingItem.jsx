@@ -1,6 +1,8 @@
 // One row of the shopping list: what to get, how much, which recipes need it, and a one-tap button
 // that moves it between "To buy" and "You've got it at home".
+// "To buy" rows also show the estimated price, or "Price unknown" (in words, not just colour).
 import { House, Undo2 } from 'lucide-react'
+import { formatPriceLine } from '../lib/formatPrice'
 import Button from './Button'
 
 function ShoppingItem({ line, atHome, onToggle, busy }) {
@@ -10,6 +12,11 @@ function ShoppingItem({ line, atHome, onToggle, busy }) {
         <p className={`font-bold capitalize ${atHome ? 'text-charcoal/75' : ''}`}>{line.name}</p>
         <p className="font-semibold">{line.label}</p>
         <p className="text-sm text-charcoal/75">For {line.recipes.map((r) => r.name).join(', ')}</p>
+        {line.price && (
+          <p className="mt-1 text-sm font-semibold">
+            {line.price.status === 'priced' ? formatPriceLine(line.price) : 'Price unknown'}
+          </p>
+        )}
       </div>
       <Button
         variant="secondary"

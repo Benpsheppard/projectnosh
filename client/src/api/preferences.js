@@ -13,6 +13,7 @@ export function useSavePreferences() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['preferences'] })
       queryClient.invalidateQueries({ queryKey: ['recipes'] }) // the suitable list may have changed
+      queryClient.invalidateQueries({ queryKey: ['shopping-list'] }) // the budget comparison may have changed
     },
   })
 }
