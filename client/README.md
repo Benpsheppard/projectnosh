@@ -1,16 +1,9 @@
-# React + Vite
+# Nosh client
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The React front end (Vite + Tailwind CSS + React Query). See the [main README](../README.md) for how to run the whole app.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- `src/pages/`: the three tabs (Recipes, Plan, Shopping list).
+- `src/components/`: small reusable pieces (cards, sheets, buttons, form parts).
+- `src/api/`: one file per API area, each exposing React Query hooks.
+- `src/lib/`: tiny helpers (date and ingredient formatting).
+- `src/index.css`: Tailwind plus the Nosh brand colours and fonts.

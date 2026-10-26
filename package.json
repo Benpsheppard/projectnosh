@@ -2,13 +2,23 @@
   "name": "projectnosh",
   "version": "1.0.0",
   "private": true,
-  "workspaces": ["shared", "server", "client"],
+  "workspaces": [
+    "shared",
+    "server",
+    "client"
+  ],
   "scripts": {
     "dev": "concurrently -n server,client -c blue,green \"npm run dev -w server\" \"npm run dev -w client\"",
     "seed": "npm run seed -w server",
-    "test": "npm test --workspaces --if-present"
+    "test": "npm test --workspaces --if-present",
+    "lint": "npm run lint -w client",
+    "build": "npm run build -w client"
   },
   "devDependencies": {
     "concurrently": "^10.0.6"
+  },
+  "description": "Nosh: plan meals, eat well and shop without overspending (interview demo app)",
+  "engines": {
+    "node": ">=22.12"
   }
 }
