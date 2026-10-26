@@ -48,6 +48,15 @@ export const recipeSchema = z.object({
 export const preferencesSchema = z.object({
   dietary: z.array(z.enum(DIETARY_TAGS)),
   householdSize: z.number().int().min(1, 'Household size must be at least 1').max(20),
+  // The weekly shopping budget in whole pence, or null for "no budget". The settings form takes
+  // pounds and converts, so the server never deals with decimals.
+  weeklyBudgetPence: z
+    .number({ error: 'Weekly budget must be a number' })
+    .int('Weekly budget must be a number')
+    .min(100, 'Weekly budget must be at least £1')
+    .max(100000, 'Weekly budget can be up to £1,000')
+    .nullable()
+    .default(null),
 })
 
 // One planned meal. `servings` is optional: when missing, the household size is used.
@@ -59,6 +68,22 @@ export const planEntrySchema = z.object({
     .min(1, 'Servings must be at least 1')
     .max(20, 'Servings can be up to 20')
     .optional(),
+})
+
+// The price table (server/data/prices.json): one supermarket's own-brand pack prices.
+// `item` is a plain ingredient name (we normalise it, so "Chopped tomatoes" is fine).
+// `unit` is what the pack size is measured in, using the same units as recipes; null means a count.
+export const priceEntrySchema = z.object({
+  item: z.string().trim().min(1, 'Add an ingredient name'),
+  packSize: z.number({ error: 'packSize must be a number' }).positive('packSize must be more than 0'),
+  unit: z.enum(UNITS, { error: `unit must be one of ${UNITS.join(', ')}, or null for a count` }).nullable(),
+  packPrice: z.number({ error: 'packPrice must be a number' }).positive('packPrice must be more than 0'),
+})
+
+export const priceTableSchema = z.object({
+  store: z.string().trim().min(1, 'Add the store name'),
+  dateChecked: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'dateChecked must look like 2026-10-26').nullable(),
+  prices: z.array(priceEntrySchema),
 })
 
 // The normalised ingredient name taken from the URL, e.g. /api/shopping-list/home-items/chopped%20tomato.

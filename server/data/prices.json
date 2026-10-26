@@ -1,0 +1,22 @@
+{
+  "notes": "SKELETON: replace the store, dateChecked and prices below with real own-brand prices from one supermarket. item = ingredient name (spelling and plurals do not matter). packSize + unit = what is in one pack (unit is one of g, kg, ml, l, tsp, tbsp, tin, slice, rasher, clove, thumb, ball, handful, or null for a plain count, e.g. a box of 6 eggs). packPrice = price of ONE pack in pounds. An item only gets a price if its unit is the same kind as the recipe's (weight, volume, or the identical count unit); otherwise the list says 'price unknown'. The server checks this file when it starts and stops with a clear message if anything is wrong.",
+  "store": "Tesco",
+  "dateChecked": null,
+  "prices": [
+    { "item": "chopped tomatoes", "packSize": 1, "unit": "tin", "packPrice": 0.47 },
+    { "item": "beef mince", "packSize": 500, "unit": "g", "packPrice": 5.05 },
+    { "item": "rice", "packSize": 1000, "unit": "g", "packPrice": 1.79 },
+    { "item": "eggs", "packSize": 6, "unit": null, "packPrice": 1.8 },
+    { "item": "milk", "packSize": 2000, "unit": "ml", "packPrice": 1.75 },
+    { "item": "olive oil", "packSize": 500, "unit": "ml", "packPrice": 5.75 },
+    { "item": "bread", "packSize": 20, "unit": null, "packPrice": 1.25 },
+    { "item": "butter", "packSize": 500, "unit": "g", "packPrice": 1.85 },
+    { "item": "chicken breast", "packSize": 1, "unit": "kg", "packPrice": 6.9 },
+    { "item": "garlic", "packSize": 10, "unit": null, "packPrice": 0.5 },
+    { "item": "kidney beans", "packSize": 1, "unit": "tin", "packPrice": 0.39 },
+    { "item": "onion", "packSize": 1, "unit": null, "packPrice": 0.11 },
+    { "item": "plain flour", "packSize": 1.5, "unit": "kg", "packPrice": 0.8 },
+    { "item": "self-raising flour", "packSize": 1.5, "unit": "kg", "packPrice": 0.8 },
+    { "item": "apple", "packSize": 1, "unit": null, "packPrice": 0.45 }
+  ]
+}
