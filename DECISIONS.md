@@ -71,5 +71,26 @@ Each entry: what we chose, and the trade-off.
 - **Friendly empty states**: nothing planned (with a link to the plan), nothing to buy (everything at home), and nothing at home yet.
 - **`DB_FILE` environment variable** selects a different database file, so experiments and browser tests can run against a scratch copy instead of real data.
 
+## Accessibility and mobile polish (phase g)
+- **Measured, not assumed.** I ran the axe engine in a real browser over every screen and sheet (Recipes, expanded card, empty state, add form with errors, Settings, picker, meal sheet, Add to plan, Plan, Shopping list) at 360px and 320px wide. Result: zero violations, no sideways scrolling. Trade-off: axe catches roughly a third of accessibility problems, so I also checked keyboard use by hand (Tab to a slot, Enter opens the sheet, Esc returns focus to it).
+- **Brand colours and contrast** (WCAG AA needs 4.5:1 for text, 3:1 for icons and borders):
+
+  | Combination | Ratio | Use |
+  |---|---|---|
+  | Charcoal on white | 12.1:1 | Body text |
+  | Charcoal on Nosh Green | 6.1:1 | Buttons, chips, badges, active tab |
+  | Nosh Green on charcoal | 6.1:1 | Header title and gear icon |
+  | Charcoal at 75% on white | 5.6:1 | Hints and secondary text |
+  | Charcoal at 70% on white | 4.8:1 | Placeholder text |
+  | Nosh Green / Deep Teal / Flame Coral / Leaf as text on white | 2.0 / 3.0 / 2.8 / 1.8 | Fail, so never used as text |
+  | Charcoal on Deep Teal / Flame Coral | 4.0 / 4.3 | Just under AA, so only for non-text accents (Teal tints the checkboxes) |
+
+  Tailwind's default placeholder colour was 2.8:1, so inputs now use charcoal at 70%.
+- **A real `<h1>`** ("Nosh") and a proper heading order (h1, then h2 per tab, h3 for cards and sections), so screen-reader users can jump around. The browser tab title also changes per tab.
+- **Day buttons**: spoken as "Monday, 2 meals planned" while showing "Mon". The short name is hidden from screen readers and the full name is hidden visually, so what is seen and what is heard both make sense. Their gap was reduced so they are 43-45px wide at 360px (39px at 320px, which is above WCAG 2.2's 24px minimum).
+- **Phone details**: the tab bar clears the iPhone home indicator (`viewport-fit=cover` plus a safe-area padding), inputs use 16px text so iOS does not zoom in on focus, `touch-action: manipulation` removes the tap delay and double-tap zoom, each tab opens scrolled to the top, and disabled buttons look disabled.
+- **README** covers running, scripts, structure, API, shopping rules, data, tests and accessibility. It targets Node 22.12+ (needed to `require()` the shared ES module) and the root `package.json` says so in `engines`.
+- **`server/.env.example`** documents the two settings; the real `.env` stays out of git. Both settings have defaults, so a fresh clone works without it.
+
 ## Where AI was used
 - Claude Code (Claude Sonnet 5.5) planned the architecture with the author, and wrote the scaffold, server layers, seed and client skeleton. The author reviews and commits each phase and chose the key decisions above (JavaScript, Tailwind, recurring week, fonts).
