@@ -1,5 +1,5 @@
 // Business logic for the user's preferences. Other services read them through here
-// (e.g. recipes use the dietary tags, the shopping list uses the household size).
+// (e.g. recipes use the dietary tags, the shopping list uses the household size and weekly budget).
 
 function createPreferenceService(preferenceRepo) {
   return {

@@ -4,12 +4,13 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { createApp } from '../src/app.js'
 import { openDb } from '../src/db/connection.js'
 import { seedRecipes } from '../src/db/seed.js'
+import { noPrices } from './helpers.js'
 
 let app
 beforeEach(() => {
   const db = openDb(':memory:')
   seedRecipes(db)
-  app = createApp(db)
+  app = createApp(db, { priceLookup: noPrices })
 })
 
 const put = (day, slot, body) => request(app).put(`/api/plan/${day}/${slot}`).send(body)

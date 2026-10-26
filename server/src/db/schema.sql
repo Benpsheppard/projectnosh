@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS plan_entries (
 CREATE TABLE IF NOT EXISTS preferences (
   id             INTEGER PRIMARY KEY CHECK (id = 1), -- single row, no accounts
   dietary        TEXT NOT NULL DEFAULT '[]',
-  household_size INTEGER NOT NULL DEFAULT 2
+  household_size INTEGER NOT NULL DEFAULT 2,
+  weekly_budget_pence INTEGER -- NULL means no budget set
 );
 INSERT OR IGNORE INTO preferences (id) VALUES (1);
 
