@@ -92,5 +92,27 @@ Each entry: what we chose, and the trade-off.
 - **README** covers running, scripts, structure, API, shopping rules, data, tests and accessibility. It targets Node 22.12+ (needed to `require()` the shared ES module) and the root `package.json` says so in `engines`.
 - **`server/.env.example`** documents the two settings; the real `.env` stays out of git. Both settings have defaults, so a fresh clone works without it.
 
+## Estimated cost (phase h, the stretch)
+- **A replaceable price lookup.** `pricing/priceLookup.js` exposes `{ store, dateChecked, find(itemKey) }`. The estimate code only knows that shape, so a different store or a database could replace it, and tests inject a tiny fake table. Prices are keyed by normalised ingredient name and the file's names are normalised too, so whoever fills in the file doesn't need to know our spelling rules.
+- **Whole packs, never pro-rata.** Packs needed = amount needed / pack size, rounded up; cost = packs x pack price. Trade-off: it over-states what you'd "use" but matches what you actually pay at the till.
+- **Unknown is not zero.** No price, or a unit that is a different kind from the pack (weight vs volume vs count, or two different count units), gives "Price unknown". Those lines are left out of the total and counted in the sentence ("About £X, plus N items we don't have a price for"). We never guess a conversion.
+- **"To taste" lines carry no price and aren't counted as unknown**, because there is nothing to buy; counting salt and pepper would make the "N items" figure noisy.
+- **Pence, not pounds.** The file is in pounds (easy to edit), but the server converts to whole pence so totals have no floating-point drift. The client only formats at the end.
+- **Only "to buy" lines are priced**, so marking something "got it at home" drops it out of the total.
+- **The price file is validated at start-up** with a shared schema (every problem listed), like the recipe seed. Trade-off: a typo stops the server rather than silently showing wrong prices.
+- **The shipped file is a skeleton** with six placeholder prices labelled "Example store (placeholder prices, not real)" and no date, so the feature can be demoed without implying real prices.
+- **Items we can't price are said plainly in words** ("Price unknown"), not only by colour.
+- **Price file errors name the ingredient** (`"bread" (price number 7) packSize: packSize must be a number`), so a typo is easy to find. API tests use an empty price table (`test/helpers.js`) instead of the real file, so editing `prices.json` can't break unrelated tests; one test still checks that the real file is valid.
+- **`API_URL` for the Vite proxy** lets the client point at an API on another port, so experiments can run on a separate database without touching the usual one.
+
+## Weekly budget (added after phase h)
+- **Stored with the other preferences**, as one nullable column (`weekly_budget_pence`; null = no budget). It is a personal setting like household size, so it shares their API (`GET/PUT /api/preferences`) and the Settings sheet.
+- **Whole pence in the API, pounds in the form.** The form accepts "40" or "40.50" and converts, like prices (see "Pence, not pounds" above). Limits are £1 to £1,000 with friendly messages from the shared schema. Blank means no budget.
+- **A small, safe migration.** `CREATE TABLE IF NOT EXISTS` ignores an existing table, so databases made before this feature lacked the column. `openDb` now checks the table and adds the column if missing (SQLite has no "add column if not exists"). Saved data is untouched, and a test builds an old-style database to prove it. Trade-off: a hand-rolled check is fine for one column; a second or third change is the point to adopt a proper migration tool.
+- **The comparison is done on the server**, in a pure `compareToBudget` function next to the cost estimate: `remainingPence = budget - total` (positive = under, negative = over). One place for the rule, easy to unit test, and the screen only has to display it.
+- **No false comfort.** If nothing could be priced the total is £0, which would look "under budget". In that case there is no comparison ("we can't compare yet"). If some items have no price, the screen says the figure doesn't include them, because the real total could be higher.
+- **Plain, non-judgemental wording**: "£3.00 over your £11.61 weekly budget." No advice, no alarm colours. An icon (tick or alert) plus the words carry the meaning, never colour alone.
+- **Two ways in**: the gear icon, or a "Set a weekly budget" / "Change budget" button on the shopping list (which opens the same Settings sheet). Saving refreshes the list straight away.
+
 ## Where AI was used
 - Claude Code (Claude Sonnet 5.5) planned the architecture with the author, and wrote the scaffold, server layers, seed and client skeleton. The author reviews and commits each phase and chose the key decisions above (JavaScript, Tailwind, recurring week, fonts).
