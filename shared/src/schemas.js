@@ -61,6 +61,11 @@ export const planEntrySchema = z.object({
     .optional(),
 })
 
+// The normalised ingredient name taken from the URL, e.g. /api/shopping-list/home-items/chopped%20tomato.
+export const homeItemSchema = z.object({
+  name: z.string().trim().toLowerCase().min(1, 'Pick an ingredient').max(100),
+})
+
 // The day (0 = Monday ... 6 = Sunday) and meal slot taken from the URL, e.g. /api/plan/0/dinner.
 const dayError = 'Pick a day from Monday to Sunday'
 export const planSlotSchema = z.object({

@@ -11,7 +11,7 @@ const { formatWeight, formatVolume, formatCount, formatLabel } = require('./form
  * @param {{ recipeId: string, servings?: number | null }[]} entries  planned meals (a recipe may appear many times)
  * @param {Map<string, object>} recipesById
  * @param {number} householdSize  used when an entry has no servings of its own
- * @returns {{ key: string, name: string, amount: number | null, unit: string | null,
+ * @returns {{ key: string, itemKey: string, name: string, amount: number | null, unit: string | null,
  *             label: string, toTaste: boolean, recipes: { id: string, name: string }[] }[]}
  */
 function aggregate(entries, recipesById, householdSize) {
@@ -47,7 +47,7 @@ function getGroup(groups, name, ingredient, scale) {
   const key = `${name}|${groupId}`
 
   if (!groups.has(key)) {
-    groups.set(key, { key, name: ingredient.item.toLowerCase().trim(), groupId, unit, total: 0, onlySpoons: true, recipes: [] })
+    groups.set(key, { key, itemKey: name, name: ingredient.item.toLowerCase().trim(), groupId, unit, total: 0, onlySpoons: true, recipes: [] })
   }
   const group = groups.get(key)
   if (quantity !== null) {
@@ -59,7 +59,7 @@ function getGroup(groups, name, ingredient, scale) {
 
 // Rounds a finished group and shapes it for the API.
 function toLine(group) {
-  const base = { key: group.key, name: group.name, recipes: group.recipes }
+  const base = { key: group.key, itemKey: group.itemKey, name: group.name, recipes: group.recipes }
   if (group.groupId === 'to-taste') {
     return { ...base, amount: null, unit: null, label: 'to taste', toTaste: true }
   }
