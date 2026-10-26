@@ -2,6 +2,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { request } from './client'
 
+// The shopping list is worked out from the plan, so it must be refreshed whenever the plan changes.
+function invalidatePlan(queryClient) {
+  queryClient.invalidateQueries({ queryKey: ['plan'] })
+  queryClient.invalidateQueries({ queryKey: ['shopping-list'] })
+}
+
 export function usePlan() {
   return useQuery({ queryKey: ['plan'], queryFn: () => request('/api/plan') })
 }
@@ -12,7 +18,7 @@ export function useSetPlanEntry() {
   return useMutation({
     mutationFn: ({ day, slot, recipeId, servings }) =>
       request(`/api/plan/${day}/${slot}`, { method: 'PUT', body: JSON.stringify({ recipeId, servings }) }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['plan'] }),
+    onSuccess: () => invalidatePlan(queryClient),
   })
 }
 
@@ -20,6 +26,6 @@ export function useRemovePlanEntry() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ day, slot }) => request(`/api/plan/${day}/${slot}`, { method: 'DELETE' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['plan'] }),
+    onSuccess: () => invalidatePlan(queryClient),
   })
 }
