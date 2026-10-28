@@ -114,5 +114,12 @@ Each entry: what we chose, and the trade-off.
 - **Plain, non-judgemental wording**: "£3.00 over your £11.61 weekly budget." No advice, no alarm colours. An icon (tick or alert) plus the words carry the meaning, never colour alone.
 - **Two ways in**: the gear icon, or a "Set a weekly budget" / "Change budget" button on the shopping list (which opens the same Settings sheet). Saving refreshes the list straight away.
 
+## Brand wordmark (after phase h)
+- **The header shows the supplied Nosh wordmark** instead of plain text, on the charcoal header as the brand guide asks. It is not recoloured, stretched or cropped (including its "Meal planning platform" line).
+- **A resized copy ships, not the original.** The supplied PNGs are about 210 kB each, which is heavy for older phones on a small header. `brandName-header.png` is the same artwork resampled to 210 px wide (about 2x its 105 px display size), 26 kB. The originals stay in `src/assets/` but are not imported, so Vite does not bundle them.
+- **Still the page's `<h1>`.** The image has `alt="Nosh"`, so screen readers hear the same heading as before. `width` and `height` are set so the header does not jump while the image loads, and the header height is unchanged.
+- **The mark is used for the favicon and home-screen icon, not in the header.** The brand guide shows the mark and wordmark stacked as one lockup, so placing them side by side in the header would rearrange the logo.
+- **Icons are the mark on a Nosh Charcoal square**, centred with padding (never cropped, stretched or recoloured): `favicon-32.png` for the browser tab and `apple-touch-icon.png` (180 px) for "Add to Home Screen". Charcoal keeps the mark visible on both light and dark browser tabs. They live in `client/public/` because browsers ask for them by a fixed URL. Together they are about 24 kB. Trade-off: at 32 px the fork and knife blur, so the tab icon reads as the flame and leaf in a teal ring.
+
 ## Where AI was used
 - Claude Code (Claude Sonnet 5.5) planned the architecture with the author, and wrote the scaffold, server layers, seed and client skeleton. The author reviews and commits each phase and chose the key decisions above (JavaScript, Tailwind, recurring week, fonts).
