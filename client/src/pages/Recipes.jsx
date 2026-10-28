@@ -1,9 +1,9 @@
 // Recipes tab: dietary banner, search, filter chips, the list of recipe cards, and the "Add recipe" form.
 // Filtering is done by the API (we send the search text, meal type, tags and whether to apply
 // the saved dietary preferences).
-import { MEAL_TYPES, RECIPE_TAGS } from '@nosh/shared'
+import { MEAL_TYPES, RECIPE_TAGS, DIETARY_TAGS } from '@nosh/shared'
 import { useState } from 'react'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, SlidersHorizontal } from 'lucide-react'
 import { usePreferences } from '../api/preferences'
 import { useRecipes } from '../api/recipes'
 import AddRecipeForm from '../components/AddRecipeForm'
@@ -17,6 +17,7 @@ import { inputClass, labelClass } from '../components/ui'
 
 function Recipes({ dietaryFilterOn, onDietaryFilterChange }) {
   const [adding, setAdding] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [notice, setNotice] = useState('') // a short confirmation, e.g. "Recipe saved"
   const [planningRecipe, setPlanningRecipe] = useState(null) // recipe whose "Add to plan" sheet is open
   const [q, setQ] = useState('')
@@ -74,8 +75,31 @@ function Recipes({ dietaryFilterOn, onDietaryFilterChange }) {
 
       <div>
         <label htmlFor="recipe-search" className={labelClass}>Search recipes</label>
-        <input id="recipe-search" type="search" className={inputClass} placeholder="Try “pasta” or “chicken”"
-          value={q} onChange={(e) => setQ(e.target.value)} />
+        <div className="flex items-center gap-2">
+          <input id="recipe-search" type="search" className={`${inputClass} min-w-0`} placeholder="Try “pasta” or “chicken”"
+            value={q} onChange={(e) => setQ(e.target.value)} />
+          {/* Icon-only, so it needs a spoken name (aria-label, including how many are chosen) and a state
+              (aria-expanded). The number is a badge that only appears when filters are chosen. It counts the
+              hidden filters only: the meal chips below are always visible. */}
+          <Button
+            variant={filtersOpen ? 'primary' : 'secondary'}
+            onClick={() => setFiltersOpen(!filtersOpen)}
+            aria-label={tags.length > 0 ? `Filters, ${tags.length} selected` : 'Filters'}
+            aria-expanded={filtersOpen}
+            aria-controls="more-filters"
+            className="relative grid size-12 shrink-0 place-items-center !px-0"
+          >
+            <SlidersHorizontal aria-hidden="true" size={22} />
+            {tags.length > 0 && (
+              <span
+                aria-hidden="true"
+                className="absolute -right-1 -top-1 grid size-5 place-items-center rounded-full bg-charcoal text-xs font-bold text-white"
+              >
+                {tags.length}
+              </span>
+            )}
+          </Button>
+        </div>
       </div>
 
       <fieldset>
@@ -87,14 +111,27 @@ function Recipes({ dietaryFilterOn, onDietaryFilterChange }) {
           ))}
         </div>
       </fieldset>
-      <fieldset>
-        <legend className="sr-only">Filter by tag</legend>
-        <div className="grid md:grid-cols-4 grid-cols-2 gap-2">
-          {RECIPE_TAGS.map((tag) => (
-            <FilterChip key={tag} label={tag} selected={tags.includes(tag)} onToggle={() => toggleTag(tag)} />
-          ))}
+
+      {filtersOpen && (
+        <div id="more-filters" className="space-y-4">
+          <fieldset>
+            <legend className="sr-only">Filter by tag</legend>
+            <div className="flex flex-wrap gap-2">
+              {RECIPE_TAGS.map((tag) => (
+                <FilterChip key={tag} label={tag} selected={tags.includes(tag)} onToggle={() => toggleTag(tag)} />
+              ))}
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend className="sr-only">Filter by dietary preference</legend>
+            <div className="flex flex-wrap gap-2">
+              {DIETARY_TAGS.map((tag) => (
+                <FilterChip key={tag} label={tag} selected={tags.includes(tag)} onToggle={() => toggleTag(tag)} />
+              ))}
+            </div>
+          </fieldset>
         </div>
-      </fieldset>
+      )}
 
       {isPending && <p>Loading recipes…</p>}
       {error && <p role="alert">{error.message}</p>}
