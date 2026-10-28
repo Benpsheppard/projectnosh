@@ -8,6 +8,8 @@ import Recipes from './pages/Recipes'
 import ShoppingList from './pages/ShoppingList'
 import SettingsSheet from './components/SettingsSheet'
 import TabBar from './components/TabBar'
+// The Nosh wordmark, resized to about twice its display size so it stays light for older phones.
+import brandName from './assets/brandName-header.png'
 
 const PAGES = { recipes: Recipes, plan: Plan, shopping: ShoppingList }
 const TITLES = { recipes: 'Recipes', plan: 'Plan', shopping: 'Shopping list' }
@@ -28,12 +30,16 @@ function App() {
     <>
       <header className="bg-charcoal px-4 py-1">
         <div className="mx-auto flex max-w-2xl items-center justify-between">
-          <h1 className="font-heading text-2xl font-bold text-nosh-green">Nosh</h1>
+          {/* Still the page's <h1>: the image's alt text is what screen readers hear. Width and height
+              match the image's shape, so the page does not jump while it loads. */}
+          <h1>
+            <img src={brandName} alt="Nosh" width="105" height="40" className="block h-10 w-auto" />
+          </h1>
           <button
             type="button"
             aria-label="Settings"
             onClick={() => setSettingsOpen(true)}
-            className="grid size-12 place-items-center text-nosh-green focus-visible:outline-nosh-green"
+            className="grid size-12 place-items-center text-coral focus-visible:outline-coral"
           >
             <Settings aria-hidden="true" />
           </button>
