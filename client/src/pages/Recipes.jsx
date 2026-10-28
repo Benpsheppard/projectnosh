@@ -3,6 +3,7 @@
 // the saved dietary preferences).
 import { MEAL_TYPES, RECIPE_TAGS } from '@nosh/shared'
 import { useState } from 'react'
+import { ExternalLink } from 'lucide-react'
 import { usePreferences } from '../api/preferences'
 import { useRecipes } from '../api/recipes'
 import AddRecipeForm from '../components/AddRecipeForm'
@@ -112,6 +113,20 @@ function Recipes({ dietaryFilterOn, onDietaryFilterChange }) {
               <Button variant="secondary" onClick={() => onDietaryFilterChange(false)}>Show all recipes</Button>
             )}
           </div>
+
+          <p className="text-sm">
+            Need recipe ideas? Try{' '}
+            <a 
+              href="https://www.bbcgoodfood.com/feature/budget" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center gap-1 font-semibold text-charcoal underline underline-offset-4"
+            >
+              BBC Good Food Budget
+              <ExternalLink aria-hidden="true" size={14} />
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
+          </p>
         </div>
       )}
 
